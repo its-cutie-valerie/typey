@@ -4,11 +4,10 @@ function App() {
   const [input, setInput] = useState('');
   const [startTime, setStartTime] = useState(null);
   const [typingSpeed, setTypingSpeed] = useState(0);
-  const [isCorrect, setIsCorrect] = useState(true);
+  const [accuracy, setAccuracy] = useState(100);
   const [timeLeft, setTimeLeft] = useState(60);
   const [timerStarted, setTimerStarted] = useState(false);
   const [sampleText, setSampleText] = useState('');
-  const [correctWords, setCorrectWords] = useState(0);
 
   // Fetch sample text once on component load
   useEffect(() => {
@@ -48,12 +47,17 @@ function App() {
       const wordCount = newInput.trim().split(/\s+/).length;
       setTypingSpeed((wordCount / elapsedTime * 60).toFixed(2));
 
-      const sampleWords = sampleText.split(' ');
-      const inputWords = newInput.trim().split(/\s+/);
-      const correctCount = inputWords.filter((word, i) => word === sampleWords[i]).length;
-      setCorrectWords(correctCount);
+      // Calculate accuracy
+      const sampleLength = sampleText.length;
+      const typedLength = newInput.length;
 
-      setIsCorrect(sampleText.toLowerCase().startsWith(newInput.toLowerCase()));
+      const correctChars = [...sampleText].slice(0, typedLength).reduce((acc, char, index) => {
+        return acc + (char === newInput[index] ? 1 : 0);
+      }, 0);
+
+      const totalRelevantChars = Math.min(sampleLength, typedLength);
+      const accuracyPercentage = totalRelevantChars === 0 ? 100 : ((correctChars / totalRelevantChars) * 100).toFixed(2);
+      setAccuracy(accuracyPercentage);
 
       return newInput;
     });
@@ -117,9 +121,9 @@ function App() {
       </div>
       <div className="stats-container">
         <div className="stats">
-          <p><strong>{typingSpeed}</strong> words per minute</p>
-          <p><strong>{correctWords}</strong> correctly typed words</p>
-          <p>Remaining time: <strong>{formatTime(timeLeft)}</strong></p>
+          <p><strong>{typingSpeed}</strong> WPM</p>
+          <p><strong>{accuracy}%</strong> Accuracy</p>
+          <p><strong>{formatTime(timeLeft)}</strong></p>
         </div>
       </div>
       {!timerStarted && timeLeft === 0 && (

@@ -45,7 +45,7 @@ const Main = () => {
       <header>
         <h1>Typey</h1>
         <button className="dark-mode-toggle" onClick={toggleDarkMode}>
-          {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          {isDarkMode ? '☀️' : '🌙'}
         </button>
         <div className='navigation-buttons'>
         <button
